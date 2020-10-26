@@ -80,6 +80,14 @@ namespace Cyotek.Demo.Scroll
 
     #region Public Events
 
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public new event EventHandler TextChanged
+    {
+      add { base.TextChanged += value; }
+      remove { base.TextChanged -= value; }
+    }
+
     [Category("Property Changed")]
     public event EventHandler TopItemChanged
     {
