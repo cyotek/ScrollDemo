@@ -19,13 +19,13 @@ namespace Cyotek.Demo.Scroll
 {
   internal partial class DemoScrollControl
   {
-    #region Internal Classes
+    #region Private Classes
 
     /// <summary>
     /// A message filter for WM_MOUSEWHEEL and WM_MOUSEHWHEEL. This class cannot be inherited.
     /// </summary>
     /// <seealso cref="T:System.Windows.Forms.IMessageFilter"/>
-    internal sealed class MouseWheelMessageFilter : IMessageFilter
+    private sealed class MouseWheelMessageFilter : IMessageFilter
     {
       #region Private Fields
 
@@ -111,28 +111,20 @@ namespace Cyotek.Demo.Scroll
               // already headed for the right control
               result = false;
             }
+            else if (Control.FromHandle(hControlUnderMouse) is DemoScrollControl)
+            {
+              // redirect the message to the control under the mouse
+              SendMessage(hControlUnderMouse, m.Msg, m.WParam, m.LParam);
+
+              // eat the message (otherwise it's possible two controls will scroll
+              // at the same time, which looks awful... and is probably confusing!)
+              result = true;
+            }
             else
             {
-              DemoScrollControl control;
-
-              control = Control.FromHandle(hControlUnderMouse) as DemoScrollControl;
-
-              if (control == null /* || !control.AllowUnfocusedMouseWheel */)
-              {
-                // window under the mouse either isn't managed, isn't an imagebox,
-                // or it is an imagebox but the unfocused whell option is disabled.
-                // whatever the case, do not try and handle the message
-                result = false;
-              }
-              else
-              {
-                // redirect the message to the control under the mouse
-                SendMessage(hControlUnderMouse, m.Msg, m.WParam, m.LParam);
-
-                // eat the message (otherwise it's possible two controls will scroll
-                // at the same time, which looks awful... and is probably confusing!)
-                result = true;
-              }
+              // window under the mouse either isn't managed or isn't
+              // our custom control so do not try and handle the message
+              result = false;
             }
             break;
 
@@ -158,6 +150,6 @@ namespace Cyotek.Demo.Scroll
       #endregion Private Methods
     }
 
-    #endregion Internal Classes
+    #endregion Private Classes
   }
 }
