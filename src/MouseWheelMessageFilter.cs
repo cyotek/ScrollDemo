@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
 // Cyotek ImageBox
@@ -68,18 +69,13 @@ namespace Cyotek.Demo.Scroll
 
             if (_active)
             {
-              if (_instance == null)
-              {
-                _instance = new MouseWheelMessageFilter();
-              }
+              Interlocked.CompareExchange(ref _instance, new MouseWheelMessageFilter(), null);
+
               Application.AddMessageFilter(_instance);
             }
-            else
+            else if (_instance != null)
             {
-              if (_instance != null)
-              {
-                Application.RemoveMessageFilter(_instance);
-              }
+              Application.RemoveMessageFilter(_instance);
             }
           }
         }
