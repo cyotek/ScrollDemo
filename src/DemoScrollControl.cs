@@ -66,7 +66,8 @@ namespace Cyotek.Demo.Scroll
 
       _scrollBar = new VScrollBar
       {
-        Enabled = false
+        Enabled = false,
+        Visible = false
       };
 
       _scrollBar.ValueChanged += this.ScrollbarValueChangedHandler;
@@ -270,7 +271,7 @@ namespace Cyotek.Demo.Scroll
     {
       base.OnPaint(e);
 
-      if (_scrollBar != null)
+      if (_visibleRows > 0)
       {
         Padding padding;
         Size size;
@@ -284,14 +285,24 @@ namespace Cyotek.Demo.Scroll
         size = this.ClientSize;
         x = padding.Left;
         y = padding.Top;
-        w = size.Width - (_scrollBar.Width + padding.Horizontal);
+        w = size.Width - padding.Horizontal;
+        if (_scrollBar?.Visible == true)
+        {
+          w -= _scrollBar.Width;
+        }
         h = _itemHeight;
 
         rows = Math.Min(_itemCount - _topItem, _visibleRows);
 
         for (int i = 0; i < rows; i++)
         {
-          TextRenderer.DrawText(e.Graphics, (_topItem + i).ToString(), this.Font, new Rectangle(x, y, w, h), this.ForeColor, TextFormatFlags.NoPadding | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+          Rectangle bounds;
+
+          bounds = new Rectangle(x, y, w - 1, h - 1);
+
+          e.Graphics.DrawRectangle(SystemPens.Control, bounds);
+
+          TextRenderer.DrawText(e.Graphics, (_topItem + i).ToString(), this.Font, Rectangle.Inflate(bounds, -3, -3), this.ForeColor, TextFormatFlags.NoPadding | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
 
           y += _itemHeight;
         }
@@ -350,6 +361,12 @@ namespace Cyotek.Demo.Scroll
       }
 
       _scrollBar.Enabled = _itemCount > _fullyVisibleRows;
+
+      if (_scrollBar.Visible != _scrollBar.Enabled)
+      {
+        _scrollBar.Visible = _scrollBar.Enabled;
+        this.Invalidate();
+      }
     }
 
     private void HandleScroll(int lines)
