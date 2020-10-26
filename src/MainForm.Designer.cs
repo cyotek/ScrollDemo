@@ -39,8 +39,15 @@
       this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.splitContainer = new System.Windows.Forms.SplitContainer();
+      this.demoScrollControl = new Cyotek.Demo.Scroll.DemoScrollControl();
+      this.propertyGrid = new System.Windows.Forms.PropertyGrid();
       this.statusStrip.SuspendLayout();
       this.menuStrip.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
+      this.splitContainer.Panel1.SuspendLayout();
+      this.splitContainer.Panel2.SuspendLayout();
+      this.splitContainer.SuspendLayout();
       this.SuspendLayout();
       // 
       // statusStrip
@@ -52,13 +59,13 @@
             this.cyotekLinkToolStripStatusLabel});
       this.statusStrip.Location = new System.Drawing.Point(0, 539);
       this.statusStrip.Name = "statusStrip";
-      this.statusStrip.Size = new System.Drawing.Size(784, 22);
+      this.statusStrip.Size = new System.Drawing.Size(484, 22);
       this.statusStrip.TabIndex = 4;
       // 
       // statusToolStripStatusLabel
       // 
       this.statusToolStripStatusLabel.Name = "statusToolStripStatusLabel";
-      this.statusToolStripStatusLabel.Size = new System.Drawing.Size(670, 17);
+      this.statusToolStripStatusLabel.Size = new System.Drawing.Size(370, 17);
       this.statusToolStripStatusLabel.Spring = true;
       this.statusToolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -87,7 +94,7 @@
             this.helpToolStripMenuItem});
       this.menuStrip.Location = new System.Drawing.Point(0, 0);
       this.menuStrip.Name = "menuStrip";
-      this.menuStrip.Size = new System.Drawing.Size(784, 24);
+      this.menuStrip.Size = new System.Drawing.Size(484, 24);
       this.menuStrip.TabIndex = 3;
       // 
       // fileToolStripMenuItem
@@ -121,11 +128,47 @@
       this.aboutToolStripMenuItem.Text = "&About...";
       this.aboutToolStripMenuItem.Click += new System.EventHandler(this.AboutToolStripMenuItem_Click);
       // 
+      // splitContainer
+      // 
+      this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.splitContainer.Location = new System.Drawing.Point(0, 24);
+      this.splitContainer.Name = "splitContainer";
+      // 
+      // splitContainer.Panel1
+      // 
+      this.splitContainer.Panel1.Controls.Add(this.demoScrollControl);
+      // 
+      // splitContainer.Panel2
+      // 
+      this.splitContainer.Panel2.Controls.Add(this.propertyGrid);
+      this.splitContainer.Size = new System.Drawing.Size(484, 515);
+      this.splitContainer.SplitterDistance = 240;
+      this.splitContainer.TabIndex = 5;
+      // 
+      // demoScrollControl
+      // 
+      this.demoScrollControl.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.demoScrollControl.Location = new System.Drawing.Point(0, 0);
+      this.demoScrollControl.Name = "demoScrollControl";
+      this.demoScrollControl.Size = new System.Drawing.Size(240, 515);
+      this.demoScrollControl.TabIndex = 0;
+      this.demoScrollControl.TopItemChanged += new System.EventHandler(this.DemoScrollControl_TopItemChanged);
+      // 
+      // propertyGrid
+      // 
+      this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.propertyGrid.Location = new System.Drawing.Point(0, 0);
+      this.propertyGrid.Name = "propertyGrid";
+      this.propertyGrid.SelectedObject = this.demoScrollControl;
+      this.propertyGrid.Size = new System.Drawing.Size(240, 515);
+      this.propertyGrid.TabIndex = 0;
+      // 
       // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(784, 561);
+      this.ClientSize = new System.Drawing.Size(484, 561);
+      this.Controls.Add(this.splitContainer);
       this.Controls.Add(this.statusStrip);
       this.Controls.Add(this.menuStrip);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
@@ -141,6 +184,10 @@
       this.statusStrip.PerformLayout();
       this.menuStrip.ResumeLayout(false);
       this.menuStrip.PerformLayout();
+      this.splitContainer.Panel1.ResumeLayout(false);
+      this.splitContainer.Panel2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
+      this.splitContainer.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -158,6 +205,9 @@
     private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+    private System.Windows.Forms.SplitContainer splitContainer;
+    private Scroll.DemoScrollControl demoScrollControl;
+    private System.Windows.Forms.PropertyGrid propertyGrid;
   }
 }
 

@@ -1,20 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Cyotek.Demo.Windows.Forms
 {
   internal partial class MainForm : BaseForm
   {
+    #region Public Constructors
+
     public MainForm()
     {
       this.InitializeComponent();
+    }
+
+    #endregion Public Constructors
+
+    #region Protected Methods
+
+    protected override void OnShown(EventArgs e)
+    {
+      base.OnShown(e);
+
+      demoScrollControl.ItemCount = 100;
+    }
+
+    #endregion Protected Methods
+
+    #region Private Methods
+
+    private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      AboutDialog.ShowAboutDialog();
     }
 
     private void CyotekLinkToolStripStatusLabel_Click(object sender, EventArgs e)
@@ -24,14 +39,16 @@ namespace Cyotek.Demo.Windows.Forms
       cyotekLinkToolStripStatusLabel.LinkVisited = true;
     }
 
-    private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DemoScrollControl_TopItemChanged(object sender, EventArgs e)
     {
-      AboutDialog.ShowAboutDialog();
+      this.Text = string.Format("{0} (TopItem: {1})", Application.ProductName, demoScrollControl.TopItem);
     }
 
     private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
     {
       this.Close();
     }
+
+    #endregion Private Methods
   }
 }
