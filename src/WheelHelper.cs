@@ -18,13 +18,13 @@ namespace Cyotek.Windows.Forms
 
     private const int WHEEL_PAGESCROLL = int.MaxValue;
 
+    private static readonly int[] _accumulator = new int[2];
+
+    private static readonly uint[] _lastActivity = new uint[2];
+
     private static readonly object _lock = new object();
 
-    private static int[] _accumulator = new int[2];
-
     private static IntPtr _hwndCurrent = IntPtr.Zero;
-
-    private static long[] _lastActivity = new long[2];
 
     #endregion Private Fields
 
@@ -42,15 +42,17 @@ namespace Cyotek.Windows.Forms
       int uLinesPerWHEELDELTA;   // Scrolling speed (how much to scroll per WHEEL_DELTA).
       int iLines;                 // How much to scroll for currently accumulated value.
       int iDirIndex = isVertical ? 0 : 1;  // The index into iAccumulator[].
-      long dwNow;
+      uint dwNow;
 
-      dwNow = DateTime.Now.Ticks;
+      dwNow = GetTickCount();
 
       uLinesPerWHEELDELTA = 0;
 
       // Even when nPage is below one line, we still want to scroll at least a little.
       if (nPage < 1)
+      {
         nPage = 1;
+      }
 
       // Ask the system for scrolling speed.
       uSysParam = isVertical ? SPI_GETWHEELSCROLLLINES : SPI_GETWHEELSCROLLCHARS;
@@ -125,6 +127,9 @@ namespace Cyotek.Windows.Forms
     #endregion Public Methods
 
     #region Private Methods
+
+    [DllImport("kernel32.dll")]
+    private static extern uint GetTickCount();
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
