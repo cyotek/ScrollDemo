@@ -36,7 +36,7 @@ namespace Cyotek.Windows.Forms
 
     // HWND we accumulate the delta for.
     // The accumulated value (vert. and horiz.).
-    public static int WheelScrollLines(IntPtr hwnd, int iDelta, int nPage, bool isVertical)
+    public static int WheelScrollLines(IntPtr hwnd, int delta, int pageSize, bool isVertical)
     {
       // We accumulate the wheel_delta until there is enough to scroll for
       // at least a single line. This improves the feel for strange values
@@ -53,9 +53,9 @@ namespace Cyotek.Windows.Forms
       linesPerWheelDelta = 0;
 
       // Even when nPage is below one line, we still want to scroll at least a little.
-      if (nPage < 1)
+      if (pageSize < 1)
       {
-        nPage = 1;
+        pageSize = 1;
       }
 
       // Ask the system for scrolling speed.
@@ -69,14 +69,14 @@ namespace Cyotek.Windows.Forms
       if (linesPerWheelDelta == WHEEL_PAGESCROLL)
       {
         // System tells to scroll over whole pages.
-        linesPerWheelDelta = nPage;
+        linesPerWheelDelta = pageSize;
       }
 
-      if (linesPerWheelDelta > nPage)
+      if (linesPerWheelDelta > pageSize)
       {
         // Slow down if page is too small. We don't want to scroll over multiple
         // pages at once.
-        linesPerWheelDelta = nPage;
+        linesPerWheelDelta = pageSize;
       }
 
       lock (_lock)
@@ -94,7 +94,7 @@ namespace Cyotek.Windows.Forms
           // Reset the accumulator if there was a long time of wheel inactivity.
           _accumulator[dirIndex] = 0;
         }
-        else if ((_accumulator[dirIndex] > 0) == (iDelta < 0))
+        else if ((_accumulator[dirIndex] > 0) == (delta < 0))
         {
           // Reset the accumulator if scrolling direction has been reversed.
           _accumulator[dirIndex] = 0;
@@ -103,7 +103,7 @@ namespace Cyotek.Windows.Forms
         if (linesPerWheelDelta > 0)
         {
           // Accumulate the delta.
-          _accumulator[dirIndex] += iDelta;
+          _accumulator[dirIndex] += delta;
 
           // Compute the lines to scroll.
           lines = _accumulator[dirIndex] * linesPerWheelDelta / WHEEL_DELTA;
