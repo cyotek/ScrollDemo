@@ -434,6 +434,7 @@ namespace Cyotek.Demo.Scroll
 
         _scrollBar.LargeChange = _fullyVisibleRows;
         _scrollBar.Maximum = _rows;
+        _scrollBar.Value = Math.Min(_scrollBar.Value, _scrollBar.Maximum - _scrollBar.LargeChange + 1);
       }
 
       _scrollBar.Enabled = _rows > _fullyVisibleRows;
