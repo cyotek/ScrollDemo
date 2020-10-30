@@ -76,7 +76,6 @@ namespace Cyotek.Demo.Scroll
       };
 
       _scrollBar.ValueChanged += this.ScrollbarValueChangedHandler;
-      _scrollBar.Scroll += this.ScrollbarValueChangedHandler;
 
       this.Controls.Add(_scrollBar);
     }
@@ -236,7 +235,6 @@ namespace Cyotek.Demo.Scroll
       {
         this.Controls.Remove(_scrollBar);
         _scrollBar.ValueChanged -= this.ScrollbarValueChangedHandler;
-        _scrollBar.Scroll -= this.ScrollbarValueChangedHandler;
         _scrollBar.Dispose();
         _scrollBar = null;
       }
