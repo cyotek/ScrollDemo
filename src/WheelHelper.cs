@@ -10,6 +10,8 @@ namespace Cyotek.Windows.Forms
   {
     #region Private Fields
 
+#pragma warning disable IDE1006 // Naming Styles
+
     private const int SPI_GETWHEELSCROLLCHARS = 0x006C;
 
     private const int SPI_GETWHEELSCROLLLINES = 0x0068;
@@ -17,6 +19,8 @@ namespace Cyotek.Windows.Forms
     private const int WHEEL_DELTA = 120;
 
     private const int WHEEL_PAGESCROLL = int.MaxValue;
+
+#pragma warning restore IDE1006 // Naming Styles
 
     private static readonly int[] _accumulator = new int[2];
 
@@ -38,15 +42,15 @@ namespace Cyotek.Windows.Forms
       // at least a single line. This improves the feel for strange values
       // of SPI_GETWHEELSCROLLLINES and for some mouses.
 
-      int uSysParam;
-      int uLinesPerWHEELDELTA;   // Scrolling speed (how much to scroll per WHEEL_DELTA).
-      int iLines;                 // How much to scroll for currently accumulated value.
-      int iDirIndex = isVertical ? 0 : 1;  // The index into iAccumulator[].
-      uint dwNow;
+      int scrollSysParam;
+      int linesPerWheelDelta;   // Scrolling speed (how much to scroll per WHEEL_DELTA).
+      int lines;                 // How much to scroll for currently accumulated value.
+      int dirIndex = isVertical ? 0 : 1;  // The index into iAccumulator[].
+      uint now;
 
-      dwNow = GetTickCount();
+      now = GetTickCount();
 
-      uLinesPerWHEELDELTA = 0;
+      linesPerWheelDelta = 0;
 
       // Even when nPage is below one line, we still want to scroll at least a little.
       if (nPage < 1)
@@ -55,24 +59,24 @@ namespace Cyotek.Windows.Forms
       }
 
       // Ask the system for scrolling speed.
-      uSysParam = isVertical ? SPI_GETWHEELSCROLLLINES : SPI_GETWHEELSCROLLCHARS;
+      scrollSysParam = isVertical ? SPI_GETWHEELSCROLLLINES : SPI_GETWHEELSCROLLCHARS;
 
-      if (!SystemParametersInfo(uSysParam, 0, ref uLinesPerWHEELDELTA, 0))
+      if (!SystemParametersInfo(scrollSysParam, 0, ref linesPerWheelDelta, 0))
       {
-        uLinesPerWHEELDELTA = 3;  // default when SystemParametersInfo() fails.
+        linesPerWheelDelta = 3;  // default when SystemParametersInfo() fails.
       }
 
-      if (uLinesPerWHEELDELTA == WHEEL_PAGESCROLL)
+      if (linesPerWheelDelta == WHEEL_PAGESCROLL)
       {
         // System tells to scroll over whole pages.
-        uLinesPerWHEELDELTA = nPage;
+        linesPerWheelDelta = nPage;
       }
 
-      if (uLinesPerWHEELDELTA > nPage)
+      if (linesPerWheelDelta > nPage)
       {
         // Slow down if page is too small. We don't want to scroll over multiple
         // pages at once.
-        uLinesPerWHEELDELTA = nPage;
+        linesPerWheelDelta = nPage;
       }
 
       lock (_lock)
@@ -85,43 +89,43 @@ namespace Cyotek.Windows.Forms
           _accumulator[0] = 0;
           _accumulator[1] = 0;
         }
-        else if (dwNow - _lastActivity[iDirIndex] > SystemInformation.DoubleClickTime * 2)
+        else if (now - _lastActivity[dirIndex] > SystemInformation.DoubleClickTime * 2)
         {
           // Reset the accumulator if there was a long time of wheel inactivity.
-          _accumulator[iDirIndex] = 0;
+          _accumulator[dirIndex] = 0;
         }
-        else if ((_accumulator[iDirIndex] > 0) == (iDelta < 0))
+        else if ((_accumulator[dirIndex] > 0) == (iDelta < 0))
         {
           // Reset the accumulator if scrolling direction has been reversed.
-          _accumulator[iDirIndex] = 0;
+          _accumulator[dirIndex] = 0;
         }
 
-        if (uLinesPerWHEELDELTA > 0)
+        if (linesPerWheelDelta > 0)
         {
           // Accumulate the delta.
-          _accumulator[iDirIndex] += iDelta;
+          _accumulator[dirIndex] += iDelta;
 
           // Compute the lines to scroll.
-          iLines = _accumulator[iDirIndex] * (int)uLinesPerWHEELDELTA / WHEEL_DELTA;
+          lines = _accumulator[dirIndex] * linesPerWheelDelta / WHEEL_DELTA;
 
           // Decrease the accumulator for the consumed amount.
           // (Corresponds to the remainder of the integer divide above.)
-          _accumulator[iDirIndex] -= iLines * WHEEL_DELTA / (int)uLinesPerWHEELDELTA;
+          _accumulator[dirIndex] -= lines * WHEEL_DELTA / linesPerWheelDelta;
         }
         else
         {
           // uLinesPerWHEELDELTA == 0, i.e. likely configured to no scrolling
           // with mouse wheel.
-          iLines = 0;
-          _accumulator[iDirIndex] = 0;
+          lines = 0;
+          _accumulator[dirIndex] = 0;
         }
 
-        _lastActivity[iDirIndex] = dwNow;
+        _lastActivity[dirIndex] = now;
       }
 
       // Note that for vertical wheel, Windows provides the delta with opposite
       // sign. Hence the minus.
-      return isVertical ? -iLines : iLines;
+      return isVertical ? -lines : lines;
     }
 
     #endregion Public Methods
