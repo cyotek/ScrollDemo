@@ -13,7 +13,11 @@ namespace Cyotek.Demo.Scroll
 
     private static readonly object _eventTopItemChanged = new object();
 
+    private int _columns;
+
     private int _fullyVisibleRows;
+
+    private int _gap;
 
     private int _itemCount;
 
@@ -63,6 +67,7 @@ namespace Cyotek.Demo.Scroll
       base.ForeColor = SystemColors.WindowText;
 
       _itemHeight = 32;
+      _columns = 1;
 
       _scrollBar = new VScrollBar
       {
@@ -112,11 +117,45 @@ namespace Cyotek.Demo.Scroll
       set { base.BackColor = value; }
     }
 
+    [DefaultValue(1)]
+    [Category("ScrollDemo")]
+    public int Columns
+    {
+      get { return _columns; }
+      set
+      {
+        if (_columns != value)
+        {
+          _columns = value;
+
+          this.DefineRows();
+          this.Invalidate();
+        }
+      }
+    }
+
     [DefaultValue(typeof(Color), "WindowText")]
     public override Color ForeColor
     {
       get { return base.ForeColor; }
       set { base.ForeColor = value; }
+    }
+
+    [DefaultValue(0)]
+    [Category("ScrollDemo")]
+    public int Gap
+    {
+      get { return _gap; }
+      set
+      {
+        if (_gap != value)
+        {
+          _gap = value;
+
+          this.DefineRows();
+          this.Invalidate();
+        }
+      }
     }
 
     [DefaultValue(0)]
@@ -287,11 +326,11 @@ namespace Cyotek.Demo.Scroll
         int y;
         int w;
         int h;
-        int rows;
+        int cw;
+        int itemIndex;
 
         padding = this.Padding;
         size = this.ClientSize;
-        x = padding.Left;
         y = padding.Top;
         w = size.Width - padding.Horizontal;
         if (_scrollBar?.Visible == true)
@@ -299,20 +338,47 @@ namespace Cyotek.Demo.Scroll
           w -= _scrollBar.Width;
         }
         h = _itemHeight;
+        cw = (w - (_gap * (_columns - 1))) / _columns;
 
-        rows = Math.Min(_itemCount - _topItem, _visibleRows);
+        itemIndex = _topItem * _columns;
 
-        for (int i = 0; i < rows; i++)
+        for (int r = 0; r < _visibleRows; r++)
         {
-          Rectangle bounds;
+          x = padding.Left;
 
-          bounds = new Rectangle(x, y, w - 1, h - 1);
+          for (int c = 0; c < _columns; c++)
+          {
+            if (itemIndex < _itemCount)
+            {
+              Rectangle bounds;
 
-          e.Graphics.DrawRectangle(SystemPens.Control, bounds);
+              bounds = new Rectangle(x, y, cw - 1, h - 1);
 
-          TextRenderer.DrawText(e.Graphics, (_topItem + i).ToString(), this.Font, Rectangle.Inflate(bounds, -3, -3), this.ForeColor, TextFormatFlags.NoPadding | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+              e.Graphics.DrawRectangle(SystemPens.Control, bounds);
 
-          y += _itemHeight;
+              TextRenderer.DrawText(
+                e.Graphics,
+                itemIndex.ToString(),
+                this.Font,
+                Rectangle.Inflate(bounds, -3, -3),
+                this.ForeColor,
+                TextFormatFlags.NoPadding | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+
+              x += cw + _gap;
+              itemIndex++;
+            }
+            else
+            {
+              break;
+            }
+          }
+
+          if (itemIndex >= _itemCount)
+          {
+            break;
+          }
+
+          y += _itemHeight + _gap;
         }
       }
     }
@@ -348,27 +414,31 @@ namespace Cyotek.Demo.Scroll
 
     private void DefineRows()
     {
-      if (_itemCount > 0)
+      if (_itemCount > 0 && _columns > 0)
       {
         int height;
 
-        _rows = _itemCount;
+        _rows = _itemCount / _columns;
+        if (_itemCount % _columns != 0)
+        {
+          _rows++;
+        }
 
         height = this.ClientSize.Height;
 
-        _fullyVisibleRows = height / _itemHeight;
+        _fullyVisibleRows = height / (_itemHeight + _gap);
         _visibleRows = _fullyVisibleRows;
 
-        if (height % _itemHeight != 0)
+        if (_rows > _visibleRows && height % (_itemHeight + _gap) != 0)
         {
           _visibleRows++;
         }
 
         _scrollBar.LargeChange = _fullyVisibleRows;
-        _scrollBar.Maximum = _itemCount;
+        _scrollBar.Maximum = _rows;
       }
 
-      _scrollBar.Enabled = _itemCount > _fullyVisibleRows;
+      _scrollBar.Enabled = _rows > _fullyVisibleRows;
 
       if (_scrollBar.Visible != _scrollBar.Enabled)
       {
