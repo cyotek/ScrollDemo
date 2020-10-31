@@ -566,6 +566,11 @@ namespace Cyotek.Demo.Scroll
         _fullyVisibleRows = height / (_itemHeight + _gap);
         _visibleRows = _fullyVisibleRows;
 
+        if (_fullyVisibleRows == 0)
+        {
+          _fullyVisibleRows = 1; // always make sure there is at least one row, otherwise you can't scroll
+        }
+
         if (_rows > _visibleRows && height % (_itemHeight + _gap) != 0)
         {
           _visibleRows++;
