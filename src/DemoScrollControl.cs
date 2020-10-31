@@ -429,7 +429,7 @@ namespace Cyotek.Demo.Scroll
 
               TextRenderer.DrawText(
                 e.Graphics,
-                itemIndex.ToString(),
+                itemIndex.ToString("N"),
                 this.Font,
                 new Rectangle(ix, iy, iw, ih),
                 this.ForeColor,
