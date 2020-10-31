@@ -220,7 +220,10 @@ namespace Cyotek.Demo.Scroll
         {
           _topItem = value;
 
-          _scrollBar.Value = value;
+          if (_columns > 0)
+          {
+            this.SetScrollValue(value / _columns);
+          }
         }
       }
     }
@@ -338,7 +341,7 @@ namespace Cyotek.Demo.Scroll
         h = _itemHeight;
         cw = (w - (_gap * (_columns - 1))) / _columns;
 
-        itemIndex = _topItem * _columns;
+        itemIndex = _topItem;
 
         for (int r = 0; r < _visibleRows; r++)
         {
@@ -434,7 +437,7 @@ namespace Cyotek.Demo.Scroll
 
         _scrollBar.LargeChange = _fullyVisibleRows;
         _scrollBar.Maximum = _rows;
-        _scrollBar.Value = Math.Min(_scrollBar.Value, _scrollBar.Maximum - _scrollBar.LargeChange + 1);
+        this.SetScrollValue(_scrollBar.Value);
       }
 
       _scrollBar.Enabled = _rows > _fullyVisibleRows;
@@ -457,12 +460,7 @@ namespace Cyotek.Demo.Scroll
         value = _rows - _fullyVisibleRows;
       }
 
-      if (value < 0)
-      {
-        value = 0;
-      }
-
-      _scrollBar.Value = value;
+      this.SetScrollValue(value);
     }
 
     private void ProcessScrollKeys(KeyEventArgs e)
@@ -497,10 +495,22 @@ namespace Cyotek.Demo.Scroll
 
     private void ScrollbarValueChangedHandler(object sender, EventArgs e)
     {
-      _topItem = _scrollBar.Value;
+      _topItem = _scrollBar.Value * _columns;
       this.Invalidate();
 
       this.OnTopItemChanged(EventArgs.Empty);
+    }
+
+    private void SetScrollValue(int value)
+    {
+      value = Math.Min(value, _scrollBar.Maximum - _scrollBar.LargeChange + 1);
+
+      if (value < 0)
+      {
+        value = 0;
+      }
+
+      _scrollBar.Value = value;
     }
 
     #endregion Private Methods
