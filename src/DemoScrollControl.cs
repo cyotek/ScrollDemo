@@ -433,7 +433,7 @@ namespace Cyotek.Demo.Scroll
                 this.Font,
                 new Rectangle(ix, iy, iw, ih),
                 this.ForeColor,
-                TextFormatFlags.NoPadding | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.PreserveGraphicsClipping);
+                TextFormatFlags.NoPadding | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.EndEllipsis);
 
               ix += iw + _gap;
               itemIndex++;
