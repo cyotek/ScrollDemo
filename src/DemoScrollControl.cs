@@ -321,31 +321,25 @@ namespace Cyotek.Demo.Scroll
 
       if (_visibleRows > 0)
       {
-        Padding padding;
-        Size size;
-        int x;
-        int y;
-        int w;
-        int h;
-        int cw;
+        Rectangle innerClient;
+        int ix;
+        int iy;
+        int iw;
+        int ih;
         int itemIndex;
 
-        padding = this.Padding;
-        size = this.ClientSize;
-        y = padding.Top;
-        w = size.Width - padding.Horizontal;
-        if (_scrollBar?.Visible == true)
-        {
-          w -= _scrollBar.Width;
-        }
-        h = _itemHeight;
-        cw = (w - (_gap * (_columns - 1))) / _columns;
+        innerClient = this.InnerClient;
+        e.Graphics.SetClip(innerClient);
+
+        iy = innerClient.Y;
+        iw = (innerClient.Width - (_gap * (_columns - 1))) / _columns;
+        ih = _itemHeight;
 
         itemIndex = _topItem;
 
         for (int r = 0; r < _visibleRows; r++)
         {
-          x = padding.Left;
+          ix = innerClient.X;
 
           for (int c = 0; c < _columns; c++)
           {
@@ -353,7 +347,7 @@ namespace Cyotek.Demo.Scroll
             {
               Rectangle bounds;
 
-              bounds = new Rectangle(x, y, cw - 1, h - 1);
+              bounds = new Rectangle(ix, iy, iw - 1, ih - 1);
 
               e.Graphics.DrawRectangle(SystemPens.Control, bounds);
 
@@ -361,11 +355,11 @@ namespace Cyotek.Demo.Scroll
                 e.Graphics,
                 itemIndex.ToString(),
                 this.Font,
-                Rectangle.Inflate(bounds, -3, -3),
+                new Rectangle(ix + 20, iy, iw, ih),
                 this.ForeColor,
-                TextFormatFlags.NoPadding | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+                TextFormatFlags.NoPadding | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.PreserveGraphicsClipping);
 
-              x += cw + _gap;
+              ix += iw + _gap;
               itemIndex++;
             }
             else
@@ -379,7 +373,7 @@ namespace Cyotek.Demo.Scroll
             break;
           }
 
-          y += _itemHeight + _gap;
+          iy += ih + _gap;
         }
       }
     }
