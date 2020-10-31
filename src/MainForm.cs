@@ -39,6 +39,16 @@ namespace Cyotek.Demo.Windows.Forms
       cyotekLinkToolStripStatusLabel.LinkVisited = true;
     }
 
+    private void DemoScrollControl_MouseLeave(object sender, EventArgs e)
+    {
+      statusToolStripStatusLabel.Text = string.Empty;
+    }
+
+    private void DemoScrollControl_MouseMove(object sender, MouseEventArgs e)
+    {
+      statusToolStripStatusLabel.Text = demoScrollControl.HitTest(e.Location).ToString();
+    }
+
     private void DemoScrollControl_TopItemChanged(object sender, EventArgs e)
     {
       this.Text = string.Format("{0} (TopItem: {1})", Application.ProductName, demoScrollControl.TopItem);

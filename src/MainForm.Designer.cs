@@ -153,6 +153,8 @@
       this.demoScrollControl.Size = new System.Drawing.Size(240, 515);
       this.demoScrollControl.TabIndex = 0;
       this.demoScrollControl.TopItemChanged += new System.EventHandler(this.DemoScrollControl_TopItemChanged);
+      this.demoScrollControl.MouseLeave += new System.EventHandler(this.DemoScrollControl_MouseLeave);
+      this.demoScrollControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DemoScrollControl_MouseMove);
       // 
       // propertyGrid
       // 

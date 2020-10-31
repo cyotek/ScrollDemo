@@ -253,6 +253,59 @@ namespace Cyotek.Demo.Scroll
     }
 
     #endregion Private Properties
+
+    #region Public Methods
+
+    public int HitTest(int x, int y)
+    {
+      int index;
+
+      if (_visibleRows > 0 && _columns > 0)
+      {
+        Rectangle innerClient;
+
+        innerClient = this.InnerClient;
+
+        if (innerClient.Contains(x, y))
+        {
+          int r;
+          int c;
+          int rh;
+          int cw;
+
+          rh = _itemHeight + _gap;
+          cw = innerClient.Width / _columns;
+
+          r = (y - innerClient.Y) / rh;
+          c = (x - innerClient.X) / cw;
+
+          index = _topItem + (r * _columns) + c;
+
+          if (index < 0 || index > _itemCount)
+          {
+            index = -1;
+          }
+        }
+        else
+        {
+          index = -1;
+        }
+      }
+      else
+      {
+        index = -1;
+      }
+
+      return index;
+    }
+
+    public int HitTest(Point point)
+    {
+      return this.HitTest(point.X, point.Y);
+    }
+
+    #endregion Public Methods
+
     #region Protected Methods
 
     protected override void Dispose(bool disposing)
