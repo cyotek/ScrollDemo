@@ -230,6 +230,29 @@ namespace Cyotek.Demo.Scroll
 
     #endregion Public Properties
 
+    #region Private Properties
+
+    private Rectangle InnerClient
+    {
+      get
+      {
+        Padding padding;
+        Size size;
+        int w;
+
+        padding = this.Padding;
+        size = this.ClientSize;
+        w = size.Width - padding.Horizontal;
+        if (_scrollBar?.Visible == true)
+        {
+          w -= _scrollBar.Width;
+        }
+
+        return new Rectangle(padding.Left, padding.Top, w, size.Height - padding.Vertical);
+      }
+    }
+
+    #endregion Private Properties
     #region Protected Methods
 
     protected override void Dispose(bool disposing)
