@@ -561,7 +561,7 @@ namespace Cyotek.Demo.Scroll
           _rows++;
         }
 
-        height = this.ClientSize.Height;
+        height = this.InnerClient.Height;
 
         _fullyVisibleRows = height / (_itemHeight + _gap);
         _visibleRows = _fullyVisibleRows;
