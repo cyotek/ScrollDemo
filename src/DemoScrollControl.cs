@@ -431,7 +431,7 @@ namespace Cyotek.Demo.Scroll
                 e.Graphics,
                 itemIndex.ToString(),
                 this.Font,
-                new Rectangle(ix + 20, iy, iw, ih),
+                new Rectangle(ix, iy, iw, ih),
                 this.ForeColor,
                 TextFormatFlags.NoPadding | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.PreserveGraphicsClipping);
 
