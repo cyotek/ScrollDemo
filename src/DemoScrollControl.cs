@@ -645,7 +645,7 @@ namespace Cyotek.Demo.Scroll
     /// <param name="value">  The value to apply. </param>
     private void SetScrollValue(int value)
     {
-      value = Math.Min(value, _scrollBar.Maximum - (_scrollBar.LargeChange + 1));
+      value = Math.Min(value, _scrollBar.Maximum - _scrollBar.LargeChange);
 
       if (value < 0)
       {
