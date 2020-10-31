@@ -10,8 +10,6 @@ namespace Cyotek.Windows.Forms
   {
     #region Private Fields
 
-#pragma warning disable IDE1006 // Naming Styles
-
     private const int SPI_GETWHEELSCROLLCHARS = 0x006C;
 
     private const int SPI_GETWHEELSCROLLLINES = 0x0068;
@@ -19,8 +17,6 @@ namespace Cyotek.Windows.Forms
     private const int WHEEL_DELTA = 120;
 
     private const int WHEEL_PAGESCROLL = int.MaxValue;
-
-#pragma warning restore IDE1006 // Naming Styles
 
     private static readonly int[] _accumulator = new int[2];
 
