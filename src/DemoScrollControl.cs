@@ -316,7 +316,7 @@ namespace Cyotek.Demo.Scroll
 
         index = _topItem + (r * _columns) + c;
 
-        if (index < 0 || index > _itemCount)
+        if (index < 0 || index >= _itemCount)
         {
           index = -1;
         }
