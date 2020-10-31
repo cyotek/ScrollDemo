@@ -258,35 +258,27 @@ namespace Cyotek.Demo.Scroll
 
     public int HitTest(int x, int y)
     {
+      Rectangle innerClient;
       int index;
 
-      if (_visibleRows > 0 && _columns > 0)
+      innerClient = this.InnerClient;
+
+      if (_visibleRows > 0 && _columns > 0 && innerClient.Contains(x, y))
       {
-        Rectangle innerClient;
+        int r;
+        int c;
+        int rh;
+        int cw;
 
-        innerClient = this.InnerClient;
+        rh = _itemHeight + _gap;
+        cw = innerClient.Width / _columns;
 
-        if (innerClient.Contains(x, y))
-        {
-          int r;
-          int c;
-          int rh;
-          int cw;
+        r = (y - innerClient.Y) / rh;
+        c = (x - innerClient.X) / cw;
 
-          rh = _itemHeight + _gap;
-          cw = innerClient.Width / _columns;
+        index = _topItem + (r * _columns) + c;
 
-          r = (y - innerClient.Y) / rh;
-          c = (x - innerClient.X) / cw;
-
-          index = _topItem + (r * _columns) + c;
-
-          if (index < 0 || index > _itemCount)
-          {
-            index = -1;
-          }
-        }
-        else
+        if (index < 0 || index > _itemCount)
         {
           index = -1;
         }
@@ -347,6 +339,7 @@ namespace Cyotek.Demo.Scroll
       base.OnFontChanged(e);
 
       this.DefineRows();
+      this.Invalidate();
     }
 
     /// <summary> Raises the <see cref="E:System.Windows.Forms.Control.KeyDown" /> event. </summary>
@@ -465,9 +458,8 @@ namespace Cyotek.Demo.Scroll
         size = this.ClientSize;
 
         _scrollBar.Bounds = new Rectangle(size.Width - _scrollBar.Width, 0, _scrollBar.Width, size.Height);
+        this.DefineRows();
       }
-
-      this.DefineRows();
     }
 
     /// <summary>
@@ -505,17 +497,18 @@ namespace Cyotek.Demo.Scroll
           _visibleRows++;
         }
 
-        _scrollBar.LargeChange = _fullyVisibleRows;
-        _scrollBar.Maximum = _rows;
-        this.SetScrollValue(_scrollBar.Value);
+        if (_scrollBar != null)
+        {
+          _scrollBar.LargeChange = _fullyVisibleRows;
+          _scrollBar.Maximum = _rows;
+          this.SetScrollValue(_scrollBar.Value);
+        }
       }
 
-      _scrollBar.Enabled = _rows > _fullyVisibleRows;
-
-      if (_scrollBar.Visible != _scrollBar.Enabled)
+      if (_scrollBar != null)
       {
-        _scrollBar.Visible = _scrollBar.Enabled;
-        this.Invalidate();
+        _scrollBar.Enabled = _rows > _fullyVisibleRows;
+        _scrollBar.Visible = _rows > _fullyVisibleRows;
       }
     }
 
