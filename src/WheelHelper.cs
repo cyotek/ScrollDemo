@@ -10,14 +10,6 @@ namespace Cyotek.Windows.Forms
   {
     #region Private Fields
 
-    private const int SPI_GETWHEELSCROLLCHARS = 0x006C;
-
-    private const int SPI_GETWHEELSCROLLLINES = 0x0068;
-
-    private const int WHEEL_DELTA = 120;
-
-    private const int WHEEL_PAGESCROLL = int.MaxValue;
-
     private static readonly int[] _accumulator = new int[2];
 
     private static readonly uint[] _lastActivity = new uint[2];
@@ -55,14 +47,14 @@ namespace Cyotek.Windows.Forms
       }
 
       // Ask the system for scrolling speed.
-      scrollSysParam = isVertical ? SPI_GETWHEELSCROLLLINES : SPI_GETWHEELSCROLLCHARS;
+      scrollSysParam = isVertical ? NativeMethods.SPI_GETWHEELSCROLLLINES : NativeMethods.SPI_GETWHEELSCROLLCHARS;
 
       if (!SystemParametersInfo(scrollSysParam, 0, ref linesPerWheelDelta, 0))
       {
         linesPerWheelDelta = 3;  // default when SystemParametersInfo() fails.
       }
 
-      if (linesPerWheelDelta == WHEEL_PAGESCROLL)
+      if (linesPerWheelDelta == NativeMethods.WHEEL_PAGESCROLL)
       {
         // System tells to scroll over whole pages.
         linesPerWheelDelta = pageSize;
@@ -102,11 +94,11 @@ namespace Cyotek.Windows.Forms
           _accumulator[dirIndex] += delta;
 
           // Compute the lines to scroll.
-          lines = _accumulator[dirIndex] * linesPerWheelDelta / WHEEL_DELTA;
+          lines = _accumulator[dirIndex] * linesPerWheelDelta / NativeMethods.WHEEL_DELTA;
 
           // Decrease the accumulator for the consumed amount.
           // (Corresponds to the remainder of the integer divide above.)
-          _accumulator[dirIndex] -= lines * WHEEL_DELTA / linesPerWheelDelta;
+          _accumulator[dirIndex] -= lines * NativeMethods.WHEEL_DELTA / linesPerWheelDelta;
         }
         else
         {

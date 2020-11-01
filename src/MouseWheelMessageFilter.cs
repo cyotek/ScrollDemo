@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -15,141 +15,122 @@ using System.Windows.Forms;
 
 // This code is derived from http://stackoverflow.com/a/13292894/148962 and http://stackoverflow.com/a/11034674/148962
 
-namespace Cyotek.Demo.Scroll
+namespace Cyotek.Windows.Forms
 {
-  internal partial class DemoScrollControl
+  /// <summary>
+  /// A message filter for WM_MOUSEWHEEL and WM_MOUSEHWHEEL. This class cannot be inherited.
+  /// </summary>
+  /// <seealso cref="T:System.Windows.Forms.IMessageFilter"/>
+  internal sealed class MouseWheelMessageFilter<T> : IMessageFilter
+    where T : Control
   {
-    #region Private Classes
+    #region Private Fields
+
+    private static bool _enabled;
+
+    private static MouseWheelMessageFilter<T> _instance;
+
+    #endregion Private Fields
+
+    #region Private Constructors
 
     /// <summary>
-    /// A message filter for WM_MOUSEWHEEL and WM_MOUSEHWHEEL. This class cannot be inherited.
+    /// Constructor that prevents a default instance of this class from being created.
     /// </summary>
-    /// <seealso cref="T:System.Windows.Forms.IMessageFilter"/>
-    private sealed class MouseWheelMessageFilter : IMessageFilter
+    private MouseWheelMessageFilter()
     {
-      #region Private Fields
+    }
 
-      private const int WM_MOUSEHWHEEL = 0x20e;
+    #endregion Private Constructors
 
-      private const int WM_MOUSEWHEEL = 0x20a;
+    #region Public Properties
 
-      private static bool _active;
-
-      private static MouseWheelMessageFilter _instance;
-
-      #endregion Private Fields
-
-      #region Private Constructors
-
-      /// <summary>
-      /// Constructor that prevents a default instance of this class from being created.
-      /// </summary>
-      private MouseWheelMessageFilter()
+    /// <summary>
+    /// Gets or sets a value indicating whether the filter is active
+    /// </summary>
+    /// <value>
+    /// <c>true</c> if the message filter is active, <c>false</c> if not.
+    /// </value>
+    [SuppressMessage("Design", "RCS1158:Static member in generic type should use a type parameter.", Justification = "<Pending>")]
+    public static bool Enabled
+    {
+      get { return _enabled; }
+      set
       {
-      }
-
-      #endregion Private Constructors
-
-      #region Public Properties
-
-      /// <summary>
-      /// Gets or sets a value indicating whether the filter is active
-      /// </summary>
-      /// <value>
-      /// <c>true</c> if the message filter is active, <c>false</c> if not.
-      /// </value>
-      public static bool Active
-      {
-        get { return _active; }
-        set
+        if (_enabled != value)
         {
-          if (_active != value)
+          _enabled = value;
+
+          if (_enabled)
           {
-            _active = value;
+            Interlocked.CompareExchange(ref _instance, new MouseWheelMessageFilter<T>(), null);
 
-            if (_active)
-            {
-              Interlocked.CompareExchange(ref _instance, new MouseWheelMessageFilter(), null);
-
-              Application.AddMessageFilter(_instance);
-            }
-            else if (_instance != null)
-            {
-              Application.RemoveMessageFilter(_instance);
-            }
+            Application.AddMessageFilter(_instance);
+          }
+          else if (_instance != null)
+          {
+            Application.RemoveMessageFilter(_instance);
           }
         }
       }
-
-      #endregion Public Properties
-
-      #region Public Methods
-
-      /// <summary>
-      /// Filters out a message before it is dispatched.
-      /// </summary>
-      /// <param name="m">  [in,out] The message to be dispatched. You cannot modify this message. </param>
-      /// <returns>
-      /// <c>true</c> to filter the message and stop it from being dispatched; <c>false</c> to allow the message to
-      /// continue to the next filter or control.
-      /// </returns>
-      /// <seealso cref="M:System.Windows.Forms.IMessageFilter.PreFilterMessage(Message@)"/>
-      bool IMessageFilter.PreFilterMessage(ref Message m)
-      {
-        bool result;
-
-        switch (m.Msg)
-        {
-          case WM_MOUSEWHEEL: // 0x020A
-          case WM_MOUSEHWHEEL: // 0x020E
-            IntPtr hControlUnderMouse;
-
-            hControlUnderMouse = WindowFromPoint(new Point((int)m.LParam));
-
-            if (hControlUnderMouse == m.HWnd)
-            {
-              // already headed for the right control
-              result = false;
-            }
-            else if (Control.FromHandle(hControlUnderMouse) is DemoScrollControl)
-            {
-              // redirect the message to the control under the mouse
-              SendMessage(hControlUnderMouse, m.Msg, m.WParam, m.LParam);
-
-              // eat the message (otherwise it's possible two controls will scroll
-              // at the same time, which looks awful... and is probably confusing!)
-              result = true;
-            }
-            else
-            {
-              // window under the mouse either isn't managed or isn't
-              // our custom control so do not try and handle the message
-              result = false;
-            }
-            break;
-
-          default:
-            // not a message we can process, don't try and block it
-            result = false;
-            break;
-        }
-
-        return result;
-      }
-
-      #endregion Public Methods
-
-      #region Private Methods
-
-      [DllImport("user32.dll", SetLastError = false)]
-      private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
-
-      [DllImport("user32.dll")]
-      private static extern IntPtr WindowFromPoint(Point point);
-
-      #endregion Private Methods
     }
 
-    #endregion Private Classes
+    #endregion Public Properties
+
+    #region Public Methods
+
+    /// <summary>
+    /// Filters out a message before it is dispatched.
+    /// </summary>
+    /// <param name="m">  [in,out] The message to be dispatched. You cannot modify this message. </param>
+    /// <returns>
+    /// <c>true</c> to filter the message and stop it from being dispatched; <c>false</c> to allow the message to
+    /// continue to the next filter or control.
+    /// </returns>
+    /// <seealso cref="M:System.Windows.Forms.IMessageFilter.PreFilterMessage(Message@)"/>
+    bool IMessageFilter.PreFilterMessage(ref Message m)
+    {
+      bool result;
+
+      switch (m.Msg)
+      {
+        case NativeMethods.WM_MOUSEWHEEL: // 0x020A
+        case NativeMethods.WM_MOUSEHWHEEL: // 0x020E
+          IntPtr hControlUnderMouse;
+
+          hControlUnderMouse = NativeMethods.WindowFromPoint(new Point((int)m.LParam));
+
+          if (hControlUnderMouse == m.HWnd)
+          {
+            // already headed for the right control
+            result = false;
+          }
+          else if (Control.FromHandle(hControlUnderMouse) is T)
+          {
+            // redirect the message to the control under the mouse
+            NativeMethods.SendMessage(hControlUnderMouse, m.Msg, m.WParam, m.LParam);
+
+            // eat the message (otherwise it's possible two controls will scroll
+            // at the same time, which looks awful... and is probably confusing!)
+            result = true;
+          }
+          else
+          {
+            // window under the mouse either isn't managed or isn't
+            // our custom control so do not try and handle the message
+            result = false;
+          }
+          break;
+
+        default:
+          // not a message we can process, don't try and block it
+          result = false;
+          break;
+      }
+
+      return result;
+    }
+
+    #endregion Public Methods
   }
 }

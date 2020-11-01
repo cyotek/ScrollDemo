@@ -57,7 +57,7 @@ namespace Cyotek.Demo.Scroll
 
       if (os.Platform == PlatformID.Win32NT && os.Version.Major < 10)
       {
-        MouseWheelMessageFilter.Active = true;
+        MouseWheelMessageFilter<DemoScrollControl>.Enabled = true;
       }
     }
 
