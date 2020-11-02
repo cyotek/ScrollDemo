@@ -256,6 +256,8 @@ namespace Cyotek.Demo.Scroll
           {
             this.SetScrollValue(value / _columns);
           }
+
+          this.OnTopItemChanged(EventArgs.Empty);
         }
       }
     }
@@ -542,6 +544,8 @@ namespace Cyotek.Demo.Scroll
     protected virtual void OnTopItemChanged(EventArgs e)
     {
       ((EventHandler)this.Events[_eventTopItemChanged])?.Invoke(this, e);
+
+      this.Invalidate();
     }
 
     #endregion Protected Methods
@@ -628,10 +632,7 @@ namespace Cyotek.Demo.Scroll
     /// <param name="e">  Event information. </param>
     private void ScrollbarValueChangedHandler(object sender, EventArgs e)
     {
-      _topItem = _scrollBar.Value * _columns;
-      this.Invalidate();
-
-      this.OnTopItemChanged(EventArgs.Empty);
+      this.TopItem = _scrollBar.Value * _columns;
     }
 
     /// <summary> Scrolls the list by the specified number of lines. </summary>
