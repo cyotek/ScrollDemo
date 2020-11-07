@@ -243,9 +243,9 @@ namespace Cyotek.Demo.Scroll
         {
           value = 0;
         }
-        else if (value > _rows)
+        else if (value > _itemCount)
         {
-          value = _rows;
+          value = _itemCount;
         }
 
         if (_topItem != value)
