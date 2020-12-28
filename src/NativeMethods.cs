@@ -24,8 +24,15 @@ namespace Cyotek.Windows.Forms
 
     #region Public Methods
 
+    [DllImport("kernel32.dll")]
+    public static extern uint GetTickCount();
+
     [DllImport("user32.dll", SetLastError = false)]
     public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SystemParametersInfo(int uiAction, uint uiParam, ref int pvParam, int fWinIni);
 
     [DllImport("user32.dll")]
     public static extern IntPtr WindowFromPoint(Point point);

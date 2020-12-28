@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 // Derived from https://www.codeproject.com/articles/1042516/custom-controls-in-win-api-scrolling
@@ -22,23 +21,19 @@ namespace Cyotek.Windows.Forms
 
     #region Public Methods
 
-    // HWND we accumulate the delta for.
-    // The accumulated value (vert. and horiz.).
     public static int WheelScrollLines(IntPtr hwnd, int delta, int pageSize, bool isVertical)
     {
       // We accumulate the wheel_delta until there is enough to scroll for
       // at least a single line. This improves the feel for strange values
       // of SPI_GETWHEELSCROLLLINES and for some mouses.
 
+      uint now;
       int scrollSysParam;
       int linesPerWheelDelta;   // Scrolling speed (how much to scroll per WHEEL_DELTA).
-      int lines;                 // How much to scroll for currently accumulated value.
       int dirIndex = isVertical ? 0 : 1;  // The index into iAccumulator[].
-      uint now;
+      int lines;                 // How much to scroll for currently accumulated value.
 
-      now = GetTickCount();
-
-      linesPerWheelDelta = 0;
+      now = NativeMethods.GetTickCount();
 
       // Even when nPage is below one line, we still want to scroll at least a little.
       if (pageSize < 1)
@@ -47,9 +42,13 @@ namespace Cyotek.Windows.Forms
       }
 
       // Ask the system for scrolling speed.
-      scrollSysParam = isVertical ? NativeMethods.SPI_GETWHEELSCROLLLINES : NativeMethods.SPI_GETWHEELSCROLLCHARS;
+      scrollSysParam = isVertical
+        ? NativeMethods.SPI_GETWHEELSCROLLLINES
+        : NativeMethods.SPI_GETWHEELSCROLLCHARS;
 
-      if (!SystemParametersInfo(scrollSysParam, 0, ref linesPerWheelDelta, 0))
+      linesPerWheelDelta = 0;
+
+      if (!NativeMethods.SystemParametersInfo(scrollSysParam, 0, ref linesPerWheelDelta, 0))
       {
         linesPerWheelDelta = 3;  // default when SystemParametersInfo() fails.
       }
@@ -117,16 +116,5 @@ namespace Cyotek.Windows.Forms
     }
 
     #endregion Public Methods
-
-    #region Private Methods
-
-    [DllImport("kernel32.dll")]
-    private static extern uint GetTickCount();
-
-    [DllImport("user32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SystemParametersInfo(int uiAction, uint uiParam, ref int pvParam, int fWinIni);
-
-    #endregion Private Methods
   }
 }

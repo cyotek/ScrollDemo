@@ -5,7 +5,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 // Cyotek ImageBox
-// Copyright (c) 2010-2015 Cyotek Ltd.
+// Copyright (c) 2010-2020 Cyotek Ltd.
 // http://cyotek.com
 // http://cyotek.com/blog/tag/imagebox
 
@@ -92,40 +92,32 @@ namespace Cyotek.Windows.Forms
     {
       bool result;
 
-      switch (m.Msg)
+      if (m.Msg == NativeMethods.WM_MOUSEWHEEL || m.Msg == NativeMethods.WM_MOUSEHWHEEL)
       {
-        case NativeMethods.WM_MOUSEWHEEL: // 0x020A
-        case NativeMethods.WM_MOUSEHWHEEL: // 0x020E
-          IntPtr hControlUnderMouse;
+        IntPtr hControlUnderMouse;
 
-          hControlUnderMouse = NativeMethods.WindowFromPoint(new Point((int)m.LParam));
+        hControlUnderMouse = NativeMethods.WindowFromPoint(new Point((int)m.LParam));
 
-          if (hControlUnderMouse == m.HWnd)
-          {
-            // already headed for the right control
-            result = false;
-          }
-          else if (Control.FromHandle(hControlUnderMouse) is T)
-          {
-            // redirect the message to the control under the mouse
-            NativeMethods.SendMessage(hControlUnderMouse, m.Msg, m.WParam, m.LParam);
+        if (hControlUnderMouse != m.HWnd && Control.FromHandle(hControlUnderMouse) is T)
+        {
+          // redirect the message to the control under the mouse
+          NativeMethods.SendMessage(hControlUnderMouse, m.Msg, m.WParam, m.LParam);
 
-            // eat the message (otherwise it's possible two controls will scroll
-            // at the same time, which looks awful... and is probably confusing!)
-            result = true;
-          }
-          else
-          {
-            // window under the mouse either isn't managed or isn't
-            // our custom control so do not try and handle the message
-            result = false;
-          }
-          break;
-
-        default:
-          // not a message we can process, don't try and block it
+          // eat the message (otherwise it's possible two controls will scroll
+          // at the same time, which looks awful... and is probably confusing!)
+          result = true;
+        }
+        else
+        {
+          // window under the mouse either isn't managed or isn't
+          // our custom control so do not try and handle the message
           result = false;
-          break;
+        }
+      }
+      else
+      {
+        // not a message we can process, don't try and block it
+        result = false;
       }
 
       return result;

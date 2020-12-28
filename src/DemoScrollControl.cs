@@ -9,7 +9,7 @@ namespace Cyotek.Demo.Scroll
   /// <summary> A demonstration scroll control. </summary>
   /// <seealso cref="Control"/>
   [DefaultProperty(nameof(ItemCount))]
-  internal partial class DemoScrollControl : Control
+  internal class DemoScrollControl : Control
   {
     #region Private Fields
 
@@ -572,18 +572,20 @@ namespace Cyotek.Demo.Scroll
 
         if (_fullyVisibleRows == 0)
         {
-          _fullyVisibleRows = 1; // always make sure there is at least one row, otherwise you can't scroll
+          // always make sure there is at least one row, otherwise you can't scroll
+          _fullyVisibleRows = 1;
         }
 
         if (_rows > _visibleRows && height % (_itemHeight + _gap) != 0)
         {
+          // account for a partially visible row
           _visibleRows++;
         }
 
         if (_scrollBar != null)
         {
           _scrollBar.LargeChange = _fullyVisibleRows;
-          _scrollBar.Maximum = _rows;
+          _scrollBar.Maximum = _rows - 1;
           this.SetScrollValue(_scrollBar.Value);
         }
       }
