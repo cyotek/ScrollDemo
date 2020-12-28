@@ -652,7 +652,25 @@ namespace Cyotek.Demo.Scroll
     /// <param name="lines">  The number lines to scroll by. </param>
     private void ScrollControl(int lines)
     {
-      this.SetScrollValue(_scrollBar.Value + lines);
+      int value;
+
+      try
+      {
+        value = checked(_scrollBar.Value + lines);
+      }
+      catch (OverflowException)
+      {
+        if (lines < 0)
+        {
+          value = 0;
+        }
+        else
+        {
+          value = _itemCount;
+        }
+      }
+
+      this.SetScrollValue(value);
     }
 
     /// <summary> Sets the scrollbar value. </summary>
